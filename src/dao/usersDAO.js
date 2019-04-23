@@ -64,6 +64,9 @@ export default class UsersDAO {
         email: userInfo.email,
         name: userInfo.name,
         password: userInfo.password
+      },
+      {
+        w: 'majority'
       })
       return { success: true }
     } catch (e) {
