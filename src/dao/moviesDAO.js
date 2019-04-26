@@ -199,7 +199,7 @@ export default class MoviesDAO {
       sortStage,
       skipStage,
       limitStage,
-      facetStage
+      facetStage,
       // TODO Ticket: Faceted Search
       // Add the stages to queryPipeline in the correct order.
     ]
@@ -265,7 +265,7 @@ export default class MoviesDAO {
 
     // TODO Ticket: Paging
     // Use the cursor to only return the movies that belong on the current page
-    const displayCursor = cursor.limit(moviesPerPage).skip(page*moviesPerPage)
+    const displayCursor = cursor.limit(moviesPerPage).skip(page * moviesPerPage)
 
     try {
       const moviesList = await displayCursor.toArray()
@@ -303,22 +303,23 @@ export default class MoviesDAO {
         {
           $match: {
             _id: ObjectId(id),
-          }
-        },{
+          },
+        },
+        {
           $lookup: {
-            from: 'comments',
-            let: {'id': '$_id'},
-            pipeline:[
+            from: "comments",
+            let: { id: "$_id" },
+            pipeline: [
               {
                 $match: {
-                  $expr: {$eq : ['$movie_id', '$$id']}
+                  $expr: { $eq: ["$movie_id", "$$id"] },
                 },
               },
-              { $sort: {date : -1} }
+              { $sort: { date: -1 } },
             ],
-            as: 'comments'
-          }
-        }
+            as: "comments",
+          },
+        },
       ]
       return await movies.aggregate(pipeline).next()
     } catch (e) {
@@ -328,7 +329,12 @@ export default class MoviesDAO {
       Handle the error that occurs when an invalid ID is passed to this method.
       When this specific error is thrown, the method should return `null`.
       */
-
+      if (
+        `${e}` ===
+        "Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters"
+      ) {
+        return null
+      }
       // TODO Ticket: Error Handling
       // Catch the InvalidId error by string matching, and then handle it.
       console.error(`Something went wrong in getMovieByID: ${e}`)
