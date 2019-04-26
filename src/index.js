@@ -12,7 +12,7 @@ Ticket: Connection Pooling
 Please change the configuration of the MongoClient object by setting the
 maximum connection pool size to 50 active connections.
 */
-
+const pool = process.env.POOL || 50
 /**
 Ticket: Timeouts
 
@@ -26,7 +26,10 @@ MongoClient.connect(
   // Set the poolSize to 50 connections.
   // TODO: Timeouts
   // Set the write timeout limit to 2500 milliseconds.
-  { useNewUrlParser: true },
+  {
+    useNewUrlParser: true,
+    poolSize: pool,
+  },
 )
   .catch(err => {
     console.error(err.stack)
